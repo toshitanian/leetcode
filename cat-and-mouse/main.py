@@ -31,7 +31,15 @@ def _breadth_first_search(start_node: int, target_node: int, graph: List[List[in
     return []
 
 
+def _cat_possible_nodes(current_node: int, visited_node: List[int], graph: List[List[int]]):
+    next_nodes = graph[current_node]
+    possible_nodes = [_ for _ in next_nodes if _ not in visited_node + [0]]
+    return possible_nodes
+
 def _both_move(graph: List[List[int]]):
+    """TODO: mouse don't move cat's next possible node
+    """
+
     current_mouse_node = 1
     current_cat_node = 2
 
@@ -43,9 +51,24 @@ def _both_move(graph: List[List[int]]):
 
     while True:
         print(f"mouse current: {current_mouse_node}")
-        mouse_path = _breadth_first_search(current_mouse_node, mouse_target_node, graph)
+        cat_possible_nodes = _cat_possible_nodes(current_cat_node, cat_visited_nodes, graph)
+        print(f"cat possible nodes: {cat_possible_nodes}")
+        next_possible_mouse_node = None
+
+        tried_mouse_node = []
+        while True:
+            mouse_path = _breadth_first_search(current_mouse_node, mouse_target_node, graph, ignore_nodes=tried_mouse_node)
+            print(f"possible mouse path {mouse_path}, possible_cat_nodes: {cat_possible_nodes}")
+            if len(mouse_path) == 0:
+                print("** cat win / no possible mouse node")
+                return 2
+
+            next_possible_mouse_node = mouse_path[1]
+            if next_possible_mouse_node not in cat_possible_nodes:
+                break
+            tried_mouse_node.append(next_possible_mouse_node)
         print(f"mouse path {mouse_path}")
-        current_mouse_node = mouse_path[1]
+        current_mouse_node = next_possible_mouse_node
 
         if current_mouse_node in mouse_visited_nodes:
             print(f"** mouse repeased: {current_mouse_node} in {mouse_visited_nodes}")
@@ -107,9 +130,10 @@ def test_cat_bfs():
     print(l)
 
 def test_both_move():
-    graph = [[2,5],[3],[0,4,5],[1,4,5],[2,3],[0,2,3]]
+#     graph = [[2,5],[3],[0,4,5],[1,4,5],[2,3],[0,2,3]]
 #    graph = [[1,3],[0],[3],[0,2]]
 #    _both_move(graph)
+    graph = [[3,4],[3,5],[3,6],[0,1,2],[0,5,6],[1,4],[2,4]] # return 0
     s = Solution()
     s.catMouseGame(graph)
 
