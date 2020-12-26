@@ -19,7 +19,6 @@ class Solution:
         while True:
             n1 = node_1.val if node_1 is not None else 0
             n2 = node_2.val if node_2 is not None else 0
-            print(n1, n2, carry)
             _sum = n1 + n2 + carry
 
             if _sum > 9:
